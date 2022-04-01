@@ -1,5 +1,6 @@
 package com.hahaen.MultiplayerBlogging.service;
 
+import com.hahaen.MultiplayerBlogging.entity.User;
 import com.hahaen.MultiplayerBlogging.mapper.UserMapper;
 import org.springframework.stereotype.Service;
 
