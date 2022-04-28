@@ -14,13 +14,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class UserService implements UserDetailsService {
-    private Map<String, String> userPasswords = new ConcurrentHashMap<>();
+    private final Map<String, String> userPasswords = new ConcurrentHashMap<>();
 
     private UserMapper userMapper;
 
     @Inject
     public UserService(UserMapper userMapper) {
         this.userMapper = userMapper;
+    }
+
+    public UserService() {
+        userPasswords.put("admin", "123456");
     }
 
     public void save(String username, String password) {
@@ -43,6 +47,7 @@ public class UserService implements UserDetailsService {
 
         String password = userPasswords.get(username);
 
-        return new org.springframework.security.core.userdetails.User(username, password, Collections.emptyList());
+        return new org.springframework.security.core.userdetails.User(
+                username, password, Collections.emptyList());
     }
 }
