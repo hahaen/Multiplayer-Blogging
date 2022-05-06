@@ -1,5 +1,6 @@
 package com.hahaen.MultiplayerBlogging.controller;
 
+import com.hahaen.MultiplayerBlogging.entity.Result;
 import com.hahaen.MultiplayerBlogging.entity.User;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -41,11 +42,11 @@ public class AuthController {
         String username = usernameAndPassword.get("username").toString();
         String password = usernameAndPassword.get("password").toString();
 
-        UserDetails userDetails = null;
+        UserDetails userDetails;
         try {
             userDetails = userDetailsService.loadUserByUsername(username);
         } catch (UsernameNotFoundException e) {
-            return new Result("fail", "用户不存在", null);
+            return new Result("fail", "用户不存在", false);
         }
 
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDetails, password);
@@ -61,38 +62,4 @@ public class AuthController {
         }
     }
 
-    public static class Result {
-        String status;
-        String msg;
-        Boolean isLogin;
-        Object data;
-
-
-        public Result(String status, String msg, Boolean isLogin) {
-            this(status, msg, isLogin, null);
-        }
-
-        public Result(String status, String msg, Boolean isLogin, Object data) {
-            this.status = status;
-            this.msg = msg;
-            this.isLogin = isLogin;
-            this.data = data;
-        }
-
-        public String getStatus() {
-            return status;
-        }
-
-        public String getMsg() {
-            return msg;
-        }
-
-        public Boolean getLogin() {
-            return isLogin;
-        }
-
-        public Object getData() {
-            return data;
-        }
-    }
 }

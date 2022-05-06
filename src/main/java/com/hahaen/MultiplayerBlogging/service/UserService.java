@@ -1,10 +1,10 @@
 package com.hahaen.MultiplayerBlogging.service;
 
 import com.hahaen.MultiplayerBlogging.entity.User;
-import com.hahaen.MultiplayerBlogging.mapper.UserMapper;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -14,21 +14,19 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class UserService implements UserDetailsService {
+
     private final Map<String, String> userPasswords = new ConcurrentHashMap<>();
 
-    private UserMapper userMapper;
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Inject
-    public UserService(UserMapper userMapper) {
-        this.userMapper = userMapper;
-    }
-
-    public UserService() {
-        userPasswords.put("admin", "123456");
+    public UserService(BCryptPasswordEncoder bCryptPasswordEncoder) {
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        save("admin", "123456");
     }
 
     public void save(String username, String password) {
-        userPasswords.put(username, password);
+        userPasswords.put(username, bCryptPasswordEncoder.encode(password));
     }
 
     public String getPassword(String username) {
@@ -36,18 +34,18 @@ public class UserService implements UserDetailsService {
     }
 
     public User getUserById(Integer id) {
-        return userMapper.findUserById(id);
+        return null;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        if (userPasswords.containsKey(username)) {
+        if (!userPasswords.containsKey(username)) {
             throw new UsernameNotFoundException(username + "：用户不存在！");
         }
 
-        String password = userPasswords.get(username);
+        String encodedPassword = userPasswords.get(username);
 
         return new org.springframework.security.core.userdetails.User(
-                username, password, Collections.emptyList());
+                username, encodedPassword, Collections.emptyList());
     }
 }
