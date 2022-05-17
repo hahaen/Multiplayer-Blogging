@@ -2,12 +2,12 @@ package com.hahaen.MultiplayerBlogging.controller;
 
 import com.hahaen.MultiplayerBlogging.entity.Result;
 import com.hahaen.MultiplayerBlogging.entity.User;
+import com.hahaen.MultiplayerBlogging.service.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,20 +20,29 @@ import java.util.Map;
 
 @Controller
 public class AuthController {
-    private UserDetailsService userDetailsService;
+    private UserService userService;
     private AuthenticationManager authenticationManager;
 
     @Inject
-    public AuthController(UserDetailsService userDetailsService,
+    public AuthController(UserService userService,
                           AuthenticationManager authenticationManager) {
-        this.userDetailsService = userDetailsService;
+        this.userService = userService;
         this.authenticationManager = authenticationManager;
     }
 
     @GetMapping("/auth")
     @ResponseBody
     public Object auth() {
-        return new Result("ok", "用户未登录", false);
+
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        User loggedInUser = userService.getUserByUserName(userName);
+
+        if (loggedInUser == null) {
+            return new Result("ok", "用户未登录", false);
+        } else {
+            return new Result("ok", null, true, loggedInUser);
+        }
     }
 
     @PostMapping("/auth/login")
@@ -44,7 +53,7 @@ public class AuthController {
 
         UserDetails userDetails;
         try {
-            userDetails = userDetailsService.loadUserByUsername(username);
+            userDetails = userService.loadUserByUsername(username);
         } catch (UsernameNotFoundException e) {
             return new Result("fail", "用户不存在", false);
         }
@@ -53,10 +62,12 @@ public class AuthController {
 
         try {
             authenticationManager.authenticate(token);
+            // 把用户信息保存在一个地方
+            // cookie
             SecurityContextHolder.getContext().setAuthentication(token);
-            User loggedInUser = new User(1, "张三");
 
-            return new Result("ok", "登录成功", true, loggedInUser);
+            return new Result("ok", "登录成功", true,
+                    userService.getUserByUserName(username));
         } catch (BadCredentialsException e) {
             return new Result("fail", "密码不正确", false);
         }
