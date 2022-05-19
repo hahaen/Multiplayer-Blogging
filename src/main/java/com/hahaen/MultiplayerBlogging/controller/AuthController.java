@@ -45,6 +45,32 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/auth/register")
+    @ResponseBody
+    public Result register(@RequestBody Map<String, String> usernameAndPassword) {
+        String username = usernameAndPassword.get("username");
+        String password = usernameAndPassword.get("password");
+
+        if (username == null || password == null) {
+            return new Result("fail", "username/password == null", false);
+        }
+        if (username.length() < 1 || username.length() > 15) {
+            return new Result("fail", "无效 username", false);
+        }
+        if (password.length() < 1 || password.length() > 15) {
+            return new Result("fail", "无效 password", false);
+        }
+
+        User user = userService.getUserByUserName(username);
+        if (user == null) {
+            userService.save(username, password);
+            return new Result("ok", "success!", false);
+        } else {
+            return new Result("fail", "用户已经存在", false);
+        }
+
+    }
+
     @PostMapping("/auth/login")
     @ResponseBody
     public Result login(@RequestBody Map<String, Object> usernameAndPassword) {
