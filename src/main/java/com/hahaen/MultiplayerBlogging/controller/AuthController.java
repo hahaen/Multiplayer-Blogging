@@ -45,6 +45,22 @@ public class AuthController {
         }
     }
 
+    @GetMapping("/auth/logout")
+    @ResponseBody
+    public Object logout() {
+
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        User loggedInUser = userService.getUserByUserName(userName);
+
+        if (loggedInUser == null) {
+            return new Result("fail", "用户未登录", false);
+        } else {
+            SecurityContextHolder.clearContext();
+            return new Result("ok", "注销成功", false);
+        }
+    }
+
     @PostMapping("/auth/register")
     @ResponseBody
     public Result register(@RequestBody Map<String, String> usernameAndPassword) {
