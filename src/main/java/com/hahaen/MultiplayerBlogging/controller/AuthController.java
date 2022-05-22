@@ -3,6 +3,7 @@ package com.hahaen.MultiplayerBlogging.controller;
 import com.hahaen.MultiplayerBlogging.entity.Result;
 import com.hahaen.MultiplayerBlogging.entity.User;
 import com.hahaen.MultiplayerBlogging.service.UserService;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -39,9 +40,9 @@ public class AuthController {
         User loggedInUser = userService.getUserByUserName(userName);
 
         if (loggedInUser == null) {
-            return new Result("ok", "用户未登录", false);
+            return Result.failure("用户未登录");
         } else {
-            return new Result("ok", null, true, loggedInUser);
+            return Result.Success(null, true, loggedInUser);
         }
     }
 
@@ -54,10 +55,10 @@ public class AuthController {
         User loggedInUser = userService.getUserByUserName(userName);
 
         if (loggedInUser == null) {
-            return new Result("fail", "用户未登录", false);
+            return Result.failure("用户未登录");
         } else {
             SecurityContextHolder.clearContext();
-            return new Result("ok", "注销成功", false);
+            return Result.Success("注销成功", false);
         }
     }
 
@@ -68,23 +69,22 @@ public class AuthController {
         String password = usernameAndPassword.get("password");
 
         if (username == null || password == null) {
-            return new Result("fail", "username/password == null", false);
+            return Result.failure("username/password == null");
         }
         if (username.length() < 1 || username.length() > 15) {
-            return new Result("fail", "无效 username", false);
+            return Result.failure("无效 username");
         }
         if (password.length() < 1 || password.length() > 15) {
-            return new Result("fail", "无效 password", false);
+            return Result.failure("无效 password");
         }
 
-        User user = userService.getUserByUserName(username);
-        if (user == null) {
+        try {
             userService.save(username, password);
-            return new Result("ok", "success!", false);
-        } else {
-            return new Result("fail", "用户已经存在", false);
+        } catch (DuplicateKeyException e) {
+            e.printStackTrace();
+            return Result.failure("用户已经存在");
         }
-
+        return Result.Success("success!", false);
     }
 
     @PostMapping("/auth/login")
@@ -97,7 +97,7 @@ public class AuthController {
         try {
             userDetails = userService.loadUserByUsername(username);
         } catch (UsernameNotFoundException e) {
-            return new Result("fail", "用户不存在", false);
+            return Result.failure("用户不存在");
         }
 
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDetails, password);
@@ -108,10 +108,9 @@ public class AuthController {
             // cookie
             SecurityContextHolder.getContext().setAuthentication(token);
 
-            return new Result("ok", "登录成功", true,
-                    userService.getUserByUserName(username));
+            return Result.Success("登录成功", true, userService.getUserByUserName(username));
         } catch (BadCredentialsException e) {
-            return new Result("fail", "密码不正确", false);
+            return Result.failure("密码不正确");
         }
     }
 

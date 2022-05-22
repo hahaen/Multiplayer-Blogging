@@ -1,11 +1,14 @@
 package com.hahaen.MultiplayerBlogging.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.time.Instant;
 
 public class User {
     private Integer id;
     private String username;
     //加密后的密码
+    @JsonIgnore
     private String encryptedPassword;
     private String avatar;
     private Instant createdAt;
