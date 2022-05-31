@@ -10,4 +10,3 @@ jenkins
 docker run --name blog-jenkins -p 8080:8080 -v E:/myself/Multiplayer-Blogging/jenkins-data:/var/jenkins_home jenkins/jenkins
 ```
 
-
