@@ -7,6 +7,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -34,31 +35,29 @@ public class AuthController {
     @GetMapping("/auth")
     @ResponseBody
     public Object auth() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        User loggedInUser = userService.getUserByUserName(userName);
+        User loggedInUser = userService.getUserByUserName(authentication == null ? null : authentication.getName());
 
         if (loggedInUser == null) {
-            return Result.failure("用户未登录");
+            return Result.success("用户没有登录");
         } else {
-            return Result.Success(null, true, loggedInUser);
+            return new Result("ok", null, true, loggedInUser);
         }
     }
 
     @GetMapping("/auth/logout")
     @ResponseBody
     public Object logout() {
-
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
 
         User loggedInUser = userService.getUserByUserName(userName);
 
         if (loggedInUser == null) {
-            return Result.failure("用户未登录");
+            return Result.failure("用户没有登录");
         } else {
             SecurityContextHolder.clearContext();
-            return Result.Success("注销成功", false);
+            return Result.success("success");
         }
     }
 
@@ -67,24 +66,23 @@ public class AuthController {
     public Result register(@RequestBody Map<String, String> usernameAndPassword) {
         String username = usernameAndPassword.get("username");
         String password = usernameAndPassword.get("password");
-
         if (username == null || password == null) {
             return Result.failure("username/password == null");
         }
         if (username.length() < 1 || username.length() > 15) {
-            return Result.failure("无效 username");
+            return Result.failure("invalid username");
         }
         if (password.length() < 1 || password.length() > 15) {
-            return Result.failure("无效 password");
+            return Result.failure("invalid password");
         }
 
         try {
             userService.save(username, password);
         } catch (DuplicateKeyException e) {
             e.printStackTrace();
-            return Result.failure("用户已经存在");
+            return Result.failure("user already exists");
         }
-        return Result.Success("success!", false);
+        return Result.success("success");
     }
 
     @PostMapping("/auth/login")
@@ -100,15 +98,16 @@ public class AuthController {
             return Result.failure("用户不存在");
         }
 
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDetails, password);
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
 
         try {
             authenticationManager.authenticate(token);
             // 把用户信息保存在一个地方
-            // cookie
+            //   Cookie
             SecurityContextHolder.getContext().setAuthentication(token);
 
-            return Result.Success("登录成功", true, userService.getUserByUserName(username));
+            return new Result("ok", "登录成功", true,
+                    userService.getUserByUserName(username));
         } catch (BadCredentialsException e) {
             return Result.failure("密码不正确");
         }
