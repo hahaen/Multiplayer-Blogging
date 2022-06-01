@@ -1,4 +1,4 @@
-package com.hahaen.MultiplayerBlogging;
+package com.hahaen.multiplayerblogging;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

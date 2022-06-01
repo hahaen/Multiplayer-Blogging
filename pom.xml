@@ -99,6 +99,70 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.6.0</version>
+                <executions>
+                    <execution>
+                        <id>start-test-database</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <longModulepath>false</longModulepath>
+                            <executable>docker</executable>
+                            <arguments>
+                                <argument>run</argument>
+                                <argument>--name</argument>
+                                <argument>blogTest</argument>
+                                <argument>-d</argument>
+                                <argument>-p</argument>
+                                <argument>3307:3306</argument>
+                                <argument>-e</argument>
+                                <argument>MYSQL_ROOT_PASSWORD=root</argument>
+                                <argument>-e</argument>
+                                <argument>MYSQL_DATABASE=blogTest</argument>
+                                <argument>mysql</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>wait-test-database</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <longModulepath>false</longModulepath>
+                            <executable>sleep</executable>
+                            <arguments>
+                                <argument>20</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>teardown-test-database</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <longModulepath>false</longModulepath>
+                            <executable>docker</executable>
+                            <arguments>
+                                <argument>rm</argument>
+                                <argument>-f</argument>
+                                <argument>blogTest</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
                 <version>6.2.4</version>
@@ -107,6 +171,20 @@
                     <password>root</password>
                     <url>jdbc:mysql://localhost:3306/blog</url>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>blogTest-setup</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>migrate</goal>
+                        </goals>
+                        <configuration>
+                            <user>root</user>
+                            <password>root</password>
+                            <url>jdbc:mysql://localhost:3307/blogTest</url>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

@@ -1,8 +1,8 @@
-package com.hahaen.MultiplayerBlogging.controller;
+package com.hahaen.multiplayerblogging.controller;
 
-import com.hahaen.MultiplayerBlogging.entity.Result;
-import com.hahaen.MultiplayerBlogging.entity.User;
-import com.hahaen.MultiplayerBlogging.service.UserService;
+import com.hahaen.multiplayerblogging.entity.Result;
+import com.hahaen.multiplayerblogging.entity.User;
+import com.hahaen.multiplayerblogging.service.UserService;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -20,6 +20,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.inject.Inject;
 import java.util.Map;
 
+/**
+ * @author hahaen
+ * @date 2022/6/1 21:13
+ */
 @Controller
 public class AuthController {
     private UserService userService;

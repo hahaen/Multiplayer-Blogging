@@ -1,13 +1,19 @@
-package com.hahaen.MultiplayerBlogging.entity;
+package com.hahaen.multiplayerblogging.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.Instant;
 
+/**
+ * @author hahaen
+ * @date 2022/6/1 21:13
+ */
 public class User {
     private Integer id;
     private String username;
-    //加密后的密码
+    /**
+     * 加密后的密码
+     */
     @JsonIgnore
     private String encryptedPassword;
     private String avatar;

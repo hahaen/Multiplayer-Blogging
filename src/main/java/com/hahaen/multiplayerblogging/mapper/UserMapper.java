@@ -1,10 +1,14 @@
-package com.hahaen.MultiplayerBlogging.mapper;
+package com.hahaen.multiplayerblogging.mapper;
 
-import com.hahaen.MultiplayerBlogging.entity.User;
+import com.hahaen.multiplayerblogging.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+/**
+ * @author hahaen
+ * @date 2022/6/1 21:13
+ */
 @Mapper
 public interface UserMapper {
     @Select("select * from user where username =#{username}")

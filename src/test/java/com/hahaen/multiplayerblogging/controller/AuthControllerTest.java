@@ -1,7 +1,7 @@
-package com.hahaen.MultiplayerBlogging.controller;
+package com.hahaen.multiplayerblogging.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hahaen.MultiplayerBlogging.service.UserService;
+import com.hahaen.multiplayerblogging.service.UserService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import javax.servlet.http.HttpSession;
@@ -72,7 +71,7 @@ class AuthControllerTest {
                         , bCryptPasswordEncoder.encode("myPassword")
                         , Collections.emptyList()));
         when(userService.getUserByUserName("myUsername"))
-                .thenReturn(new com.hahaen.MultiplayerBlogging.entity.User(123, "myUsername"
+                .thenReturn(new com.hahaen.multiplayerblogging.entity.User(123, "myUsername"
                         , bCryptPasswordEncoder.encode("myPassword")));
 
         MvcResult response = mockMvc.perform(post("/auth/login")

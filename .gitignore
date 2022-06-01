@@ -4,6 +4,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 jenkins-data/
+NUL
 
 ### STS ###
 .apt_generated

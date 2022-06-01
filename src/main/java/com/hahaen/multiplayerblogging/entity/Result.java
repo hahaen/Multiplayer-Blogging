@@ -1,5 +1,9 @@
-package com.hahaen.MultiplayerBlogging.entity;
+package com.hahaen.multiplayerblogging.entity;
 
+/**
+ * @author hahaen
+ * @date 2022/6/1 21:13
+ */
 public class Result {
     String status;
     String msg;

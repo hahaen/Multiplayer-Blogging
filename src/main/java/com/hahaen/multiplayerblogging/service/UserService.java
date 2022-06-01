@@ -1,7 +1,7 @@
-package com.hahaen.MultiplayerBlogging.service;
+package com.hahaen.multiplayerblogging.service;
 
-import com.hahaen.MultiplayerBlogging.entity.User;
-import com.hahaen.MultiplayerBlogging.mapper.UserMapper;
+import com.hahaen.multiplayerblogging.entity.User;
+import com.hahaen.multiplayerblogging.mapper.UserMapper;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

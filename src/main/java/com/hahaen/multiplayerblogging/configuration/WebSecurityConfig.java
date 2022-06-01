@@ -1,6 +1,6 @@
-package com.hahaen.MultiplayerBlogging.configuration;
+package com.hahaen.multiplayerblogging.configuration;
 
-import com.hahaen.MultiplayerBlogging.service.UserService;
+import com.hahaen.multiplayerblogging.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,9 +12,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.inject.Inject;
 
+/**
+ * @author hahaen
+ * @date 2022/6/1 21:13
+ */
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
     @Inject
     private UserService userService;
 
