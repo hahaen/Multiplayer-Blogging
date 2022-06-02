@@ -2,6 +2,7 @@ package com.hahaen.multiplayerblogging.controller;
 
 import com.hahaen.multiplayerblogging.entity.Result;
 import com.hahaen.multiplayerblogging.entity.User;
+import com.hahaen.multiplayerblogging.entity.loginResult;
 import com.hahaen.multiplayerblogging.service.UserService;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -38,30 +39,30 @@ public class AuthController {
 
     @GetMapping("/auth")
     @ResponseBody
-    public Object auth() {
+    public Result auth() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         User loggedInUser = userService.getUserByUserName(authentication == null ? null : authentication.getName());
 
         if (loggedInUser == null) {
-            return Result.success("用户没有登录");
+            return loginResult.success("用户没有登录", false);
         } else {
-            return new Result("ok", null, true, loggedInUser);
+            return loginResult.success(null, loggedInUser, true);
         }
     }
 
     @GetMapping("/auth/logout")
     @ResponseBody
-    public Object logout() {
+    public Result logout() {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
 
         User loggedInUser = userService.getUserByUserName(userName);
 
         if (loggedInUser == null) {
-            return Result.failure("用户没有登录");
+            return loginResult.failure("用户没有登录");
         } else {
             SecurityContextHolder.clearContext();
-            return Result.success("success");
+            return loginResult.success("success", false);
         }
     }
 
@@ -71,22 +72,22 @@ public class AuthController {
         String username = usernameAndPassword.get("username");
         String password = usernameAndPassword.get("password");
         if (username == null || password == null) {
-            return Result.failure("username/password == null");
+            return loginResult.failure("username/password == null");
         }
         if (username.length() < 1 || username.length() > 15) {
-            return Result.failure("invalid username");
+            return loginResult.failure("invalid username");
         }
         if (password.length() < 1 || password.length() > 15) {
-            return Result.failure("invalid password");
+            return loginResult.failure("invalid password");
         }
 
         try {
             userService.save(username, password);
         } catch (DuplicateKeyException e) {
             e.printStackTrace();
-            return Result.failure("user already exists");
+            return loginResult.failure("user already exists");
         }
-        return Result.success("success");
+        return loginResult.success("success", false);
     }
 
     @PostMapping("/auth/login")
@@ -99,7 +100,7 @@ public class AuthController {
         try {
             userDetails = userService.loadUserByUsername(username);
         } catch (UsernameNotFoundException e) {
-            return Result.failure("用户不存在");
+            return loginResult.failure("用户不存在");
         }
 
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
@@ -110,10 +111,9 @@ public class AuthController {
             //   Cookie
             SecurityContextHolder.getContext().setAuthentication(token);
 
-            return new Result("ok", "登录成功", true,
-                    userService.getUserByUserName(username));
+            return loginResult.success("登录成功", userService.getUserByUserName(username), true);
         } catch (BadCredentialsException e) {
-            return Result.failure("密码不正确");
+            return loginResult.failure("密码不正确");
         }
     }
 

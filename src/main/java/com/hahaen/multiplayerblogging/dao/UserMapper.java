@@ -1,4 +1,4 @@
-package com.hahaen.multiplayerblogging.mapper;
+package com.hahaen.multiplayerblogging.dao;
 
 import com.hahaen.multiplayerblogging.entity.User;
 import org.apache.ibatis.annotations.Mapper;

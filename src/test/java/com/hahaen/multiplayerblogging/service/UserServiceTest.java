@@ -1,7 +1,7 @@
 package com.hahaen.multiplayerblogging.service;
 
 import com.hahaen.multiplayerblogging.entity.User;
-import com.hahaen.multiplayerblogging.mapper.UserMapper;
+import com.hahaen.multiplayerblogging.dao.UserMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

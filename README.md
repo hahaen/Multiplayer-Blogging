@@ -13,6 +13,20 @@ docker run --name blogTest -d -p 3307:3306 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_
 
 ```
 
+flyway
+
+```text
+
+mvn flyway:clean
+
+```
+
+```text
+
+mvn flyway:migrate
+
+```
+
 jenkins
 ```docker
 
