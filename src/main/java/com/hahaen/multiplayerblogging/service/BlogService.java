@@ -3,7 +3,6 @@ package com.hahaen.multiplayerblogging.service;
 import com.hahaen.multiplayerblogging.dao.BlogDao;
 import com.hahaen.multiplayerblogging.entity.Blog;
 import com.hahaen.multiplayerblogging.entity.BlogResult;
-import com.hahaen.multiplayerblogging.entity.Result;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
