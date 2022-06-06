@@ -9,6 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.time.Instant;
 import java.util.Collections;
 
 @Service
@@ -43,5 +44,9 @@ public class UserService implements UserDetailsService {
 
         return new org.springframework.security.core.userdetails.User(
                 username, user.getEncryptedPassword(), Collections.emptyList());
+    }
+
+    public User getUserById(Integer userId) {
+        return this.userMapper.getUserById(userId);
     }
 }

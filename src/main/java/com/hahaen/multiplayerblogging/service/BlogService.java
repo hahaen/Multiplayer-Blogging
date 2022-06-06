@@ -17,22 +17,30 @@ import java.util.List;
 @Service
 public class BlogService {
     private BlogDao blogDao;
+    private UserService userService;
 
     @Inject
-    public BlogService(BlogDao blogDao) {
+
+    public BlogService(BlogDao blogDao,
+                       UserService userService) {
         this.blogDao = blogDao;
+        this.userService = userService;
     }
 
 
     public BlogResult getBlogs(Integer page, Integer pageSize, Integer userId) {
         try {
             List<Blog> blogs = blogDao.getBlogs(page, pageSize, userId);
+
+            blogs.forEach(blog -> blog.setUser(userService.getUserById(blog.getUserId())));
+
             int cout = blogDao.count(userId);
 
             int pageCount = cout % pageSize == 0 ? cout / pageSize : cout / pageSize + 1;
 
             return BlogResult.newBlogs(blogs, cout, page, pageCount);
         } catch (Exception e) {
+            e.printStackTrace();
             return BlogResult.failure("系统异常");
         }
 
