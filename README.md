@@ -7,11 +7,6 @@ docker run --name blog -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATA
 
 ```
 
-```docker
-
-docker run --name blogTest -d -p 3307:3306 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=blogTest mysql
-
-```
 
 flyway
 
@@ -32,5 +27,9 @@ jenkins
 
 docker run --name blog-jenkins -p 8081:8080 -v E:/myself/Multiplayer-Blogging/jenkins-data:/var/jenkins_home jenkins/jenkins
 
+```
+
+```
+java -Dserver.port=5001 -jar Multiplayer-Blogging-0.0.1-SNAPSHOT.jar
 ```
 
