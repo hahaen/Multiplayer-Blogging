@@ -6,27 +6,31 @@ package com.hahaen.multiplayerblogging.entity;
  * @author: hahaen
  * @date: 2022/6/2 15:50
  **/
-public class loginResult extends Result<User> {
-    Boolean isLogin;
+public class LoginResult extends Result<User> {
+    boolean isLogin;
 
-    protected loginResult(String status, String msg, User user, boolean isLogin) {
+    protected LoginResult(ResultStatus status, String msg, User user, boolean isLogin) {
         super(status, msg, user);
         this.isLogin = isLogin;
     }
 
-    public static Result success(String msg, boolean isLogin) {
-        return success(msg, null, isLogin);
+    public static LoginResult success(String msg, boolean isLogin) {
+        return new LoginResult(ResultStatus.OK, msg, null, isLogin);
     }
 
-    public static Result success(String msg, User user, boolean isLogin) {
-        return new loginResult("ok", msg, user, isLogin);
+    public static LoginResult success(User user) {
+        return new LoginResult(ResultStatus.OK, null, user, true);
     }
 
-    public static Result failure(String msg) {
-        return new loginResult("fail", msg, null, false);
+    public static LoginResult failure(String msg) {
+        return new LoginResult(ResultStatus.FAIL, msg, null, false);
     }
 
-    public Boolean getLogin() {
+    public static LoginResult success(String msg, User user) {
+        return new LoginResult(ResultStatus.OK, msg, user, true);
+    }
+
+    public boolean getIsLogin() {
         return isLogin;
     }
 }

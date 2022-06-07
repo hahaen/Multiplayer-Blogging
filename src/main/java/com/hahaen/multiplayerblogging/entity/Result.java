@@ -5,30 +5,30 @@ package com.hahaen.multiplayerblogging.entity;
  * @date 2022/6/1 21:13
  */
 public abstract class Result<T> {
-    String status;
+    public enum ResultStatus {
+        OK("ok"),
+        FAIL("fail");
+
+        private String status;
+
+        ResultStatus(String status) {
+            this.status = status;
+        }
+    }
+
+    ResultStatus status;
     String msg;
     T data;
 
-//    public static Result failure(String message) {
-//        return new Result("fail", message, false);
-//    }
-//
-//    public static Result success(String message) {
-//        return new Result("ok", message, false);
-//    }
 
-    protected Result(String status, String msg) {
-        this(status, msg, null);
-    }
-
-    protected Result(String status, String msg, T data) {
+    protected Result(ResultStatus status, String msg, T data) {
         this.status = status;
         this.msg = msg;
         this.data = data;
     }
 
     public String getStatus() {
-        return status;
+        return status.status;
     }
 
     public String getMsg() {

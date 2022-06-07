@@ -22,7 +22,6 @@ import java.io.IOException;
 @SpringBootTest(classes = MultiplayerBloggingApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource(locations = "classpath:test.properties")
 public class MyIntegrationTest {
-
     @Inject
     Environment environment;
 

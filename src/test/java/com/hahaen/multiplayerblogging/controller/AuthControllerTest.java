@@ -1,17 +1,18 @@
 package com.hahaen.multiplayerblogging.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hahaen.multiplayerblogging.service.AuthService;
 import com.hahaen.multiplayerblogging.service.UserService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -19,12 +20,9 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import javax.servlet.http.HttpSession;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -32,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(SpringExtension.class)
 class AuthControllerTest {
-    private MockMvc mockMvc;
+    private MockMvc mvc;
 
     @Mock
     private UserService userService;
@@ -42,54 +40,45 @@ class AuthControllerTest {
     private BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
     @BeforeEach
-    void setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(new AuthController(userService, authenticationManager)).build();
+    void setUp() {
+        AuthService authService = new AuthService(userService);
+        mvc = MockMvcBuilders.standaloneSetup(new AuthController(userService, authenticationManager, authService)).build();
     }
 
     @Test
     void returnNotLoginByDefault() throws Exception {
-        mockMvc.perform(get("/auth")).andExpect(status().isOk()).andExpect(mvcResult -> {
-            Assertions.assertTrue(mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8).contains("用户没有登录"));
-        });
+        mvc.perform(get("/auth")).andExpect(status().isOk())
+                .andExpect(result -> Assertions.assertTrue(result.getResponse().getContentAsString().contains("用户没有登录")));
     }
 
     @Test
     void testLogin() throws Exception {
-        //未登录，检查/auth返回值
-        mockMvc.perform(get("/auth")).andExpect(status().isOk()).andExpect(mvcResult -> {
-            System.out.println(mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8));
-            Assertions.assertTrue(mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8).contains("用户没有登录"));
-        });
+        //未登录时，/auth接口返回未登录状态
+        mvc.perform(get("/auth")).andExpect(status().isOk())
+                .andExpect(result -> Assertions.assertTrue(result.getResponse().getContentAsString().contains("用户没有登录")));
 
-        //登录
+        // 使用/auth/login登录
         Map<String, String> usernamePassword = new HashMap<>();
-        usernamePassword.put("username", "myUsername");
-        usernamePassword.put("password", "myPassword");
+        usernamePassword.put("username", "MyUser");
+        usernamePassword.put("password", "MyPassword");
 
-        when(userService.loadUserByUsername("myUsername"))
-                .thenReturn(new User("myUsername"
-                        , bCryptPasswordEncoder.encode("myPassword")
-                        , Collections.emptyList()));
-        when(userService.getUserByUserName("myUsername"))
-                .thenReturn(new com.hahaen.multiplayerblogging.entity.User(123, "myUsername"
-                        , bCryptPasswordEncoder.encode("myPassword")));
+        Mockito.when(userService.getUserByUsername("MyUser")).thenReturn(new com.hahaen.multiplayerblogging.entity.User(123, "MyUser", bCryptPasswordEncoder.encode("MyPassword")));
 
-        MvcResult response = mockMvc.perform(post("/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON_UTF8)
-                        .content(new ObjectMapper().writeValueAsString(usernamePassword)))
+        MvcResult response = mvc.perform(post("/auth/login").contentType(MediaType.APPLICATION_JSON_UTF8)
+                .header("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36")
+                .content(new ObjectMapper().writeValueAsString(usernamePassword)))
                 .andExpect(status().isOk())
-                .andExpect(result -> Assertions.assertTrue(result.getResponse()
-                        .getContentAsString(StandardCharsets.UTF_8)
-                        .contains("登录成功")))
+                .andExpect(result -> Assertions.assertTrue(result.getResponse().getContentAsString().contains("登录成功")))
                 .andReturn();
 
         HttpSession session = response.getRequest().getSession();
 
-        //处于登录状态，再次检查/auth返回值
-        mockMvc.perform(get("/auth").session((MockHttpSession) session)).andExpect(status().isOk())
-                .andExpect(mvcResult -> {
-                    System.out.println(mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8));
-                    Assertions.assertTrue(mvcResult.getResponse().getContentAsString(StandardCharsets.UTF_8).contains("myUsername"));
+        // 再次检查/auth的返回值，处于登录状态
+        mvc.perform(get("/auth").session((MockHttpSession) session)).andExpect(status().isOk())
+                .andExpect(result -> {
+                    System.out.println(result.getResponse().getContentAsString());
+                    Assertions.assertTrue(result.getResponse().getContentAsString().contains("MyUser"));
                 });
+
     }
 }

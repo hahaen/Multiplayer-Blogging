@@ -1,7 +1,5 @@
 package com.hahaen.multiplayerblogging.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.time.Instant;
 
 /**
@@ -12,16 +10,14 @@ import java.time.Instant;
  **/
 public class Blog {
     private Integer id;
-    @JsonIgnore
-    private Integer userId;
+    private User user;
     private String title;
     private String description;
     private String content;
-    private Instant createdAt;
     private Instant updatedAt;
-    private User user;
+    private Instant createdAt;
 
-    public User getUser(User userById) {
+    public User getUser() {
         return user;
     }
 
@@ -35,18 +31,6 @@ public class Blog {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
-
-    public User getUser() {
-        return user;
     }
 
     public String getTitle() {
@@ -73,6 +57,14 @@ public class Blog {
         this.content = content;
     }
 
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
     public Instant getCreatedAt() {
         return createdAt;
     }
@@ -81,11 +73,7 @@ public class Blog {
         this.createdAt = createdAt;
     }
 
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
+    public Integer getUserId() {
+        return user == null ? null : user.getId();
     }
 }
